@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./styles.css";
 //import axios from "axios"; //fetch yelp reviews
 
 export default function Game() {
@@ -45,7 +46,7 @@ export default function Game() {
   }
 
   function submitAnswer(){  //Submits and shows the result section
-    if (guess === rating) {
+    if (guess === Math.round(rating)) {
       setScore(score + 1);
       setMessage("Yay, you got it correct :)");
     }
@@ -57,26 +58,59 @@ export default function Game() {
 
   function getStarIcon(num){
     if(!num) return null;
-    return Array.from({length:num}).map((_, i)=> (<span key={i} style={styles.starIcon}>⭐</span>));
+    let stars = [];
+    for (let i = 0; i < num; i++) {
+      stars.push(<span key={i}>⭐</span>);
+    }
+    return stars;
   }
 
+  function getStarButtons() {
+    let buttons = [];
+    let numbers = [1, 2, 3, 4, 5];
+
+    for (let i = 0; i < numbers.length; i++) {
+      let num = numbers[i];
+
+      let className = "starButton";
+
+      if (guess === num) {
+        className = "starButton selected";
+      }
+
+      let button = (
+        <button
+          key={num}
+          className={className}
+          onClick={() => getGuess(num)}
+          disabled={showResult}
+        >
+          ⭐ {num}
+        </button>
+      );
+
+      buttons.push(button);
+    }
+
+    return buttons;
+  }
   //UI
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <h1 style={styles.title}>Yelp Star Guesser</h1>
-        <p>{getStarIcon(5)}</p>
+    <div className="page">
+      <div className="card">
+        <h1 className="title">Yelp Star Guesser</h1>
+        <p className="stars">{getStarIcon(5)}</p>
 
         {/*User clicks get review button, then it dissapears and the review shows*/}
         {!showReview && (
-          <button style={styles.button} onClick={getReview}>Get Yelp Review</button>
+          <button className="button" onClick={getReview}>Get Yelp Review</button>
         )}
         {showReview && ( 
           <div>
             <h3>Hints for: {business}</h3>
 
             {hints.slice(0, visibleCount).map((h, i) => (
-              <div key={i} style={styles.reviewBox}>
+              <div key={i}>
                 <p>{h.text?.text}</p>     
               </div>
             ))}
@@ -97,33 +131,15 @@ export default function Game() {
 
         {/* Star buttons */}
         {showReview && (
-          <div style={styles.row}> 
-            {[1, 2, 3, 4, 5].map((num) => (
-              <button
-                key={num}
-                onClick={() => getGuess(num)}
-                disabled={showResult} //user can't click these buttons after submitting their review
-                style={{
-                  ...styles.starButton,
-                  backgroundColor: guess === num ? "#d6f0ff" : "#efeffd",
-                  transform: guess === num ? "scale(1.05)" : "scale(1)",
-                }}>
-                <span style={styles.starIcon}>⭐</span> {num}
-              </button>
-          ))}
-          </div>
-        )}
+          <div className="row"> 
+            {getStarButtons()}
+        </div>
+      )}
 
         {/* Submit Button */}
         {showReview && !showResult && (
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <button
-              style={{
-                ...styles.button,
-                opacity: guess ? 1 : 0.5,
-                cursor: guess ? "pointer" : "not-allowed",
-                marginTop: "20px",
-              }}
+          <div className="center">
+            <button className="button"
               onClick={submitAnswer} disabled={!guess}  //user can't submit a guess without selecting a star rating
               >Submit Guess
             </button>
@@ -133,7 +149,7 @@ export default function Game() {
         {/* Results */}
         {showResult && (
           <>
-            <div style={styles.result}>
+            <div className="result">
               <p>{message}</p>
               <p>
                 Your guess: {guess} stars {getStarIcon(guess)}
@@ -143,102 +159,14 @@ export default function Game() {
               </p>
             </div>
 
-            <button style={styles.button} onClick={getReview}  //reset the game with a new review
+            <button className="button" onClick={getReview}  //reset the game with a new review
               >Get Another Review
             </button>
 
-            <div style={styles.score}>Score: {score}</div>
+            <div className="score">Score: {score}</div>
           </>
         )}
       </div>
     </div>
   );
 }
-
-const styles = {
-  page: {
-    height: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    background: "linear-gradient(to bottom right, #a9a9fd, #c7e5f6)", 
-    fontFamily: "Delius, Comic Sans MS, cursive, sans-serif",
-  },
-
-  card: {
-    width: "420px",
-    padding: "25px",
-    borderRadius: "25px",   //rounded corners
-    backgroundColor: "#d9d9ff",
-    boxShadow: "0 10px 30px rgba(160, 117, 252, 0.45)",
-    textAlign: "center",
-    border: "3px solid #b7b7f5",
-  },
-
-  title: {
-    fontSize: "45px",
-    marginBottom: "15px",
-    color: "#908eff", // lavender purple
-    fontWeight: "bold",
-  },
-
-  button: {
-    padding: "10px 15px",
-    border: "none",
-    borderRadius: "15px",
-    backgroundColor: "#8db2fd", // baby blue
-    color: "white",
-    cursor: "pointer",
-    marginBottom: "20px",
-    display: "block",
-    margin: "20px auto 0",
-    fontWeight: "bold",
-    boxShadow: "0 4px 10px rgba(78, 129, 232, 0.3)",
-  },
-
-  reviewBox: {
-    padding: "18px",
-    borderRadius: "15px",
-    backgroundColor: "#efeffd",
-    border: "2px solid #c6c6fc",
-    marginBottom: "20px",
-    minHeight: "80px",
-    color: "#444",
-  },
-
-  row: {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: "10px",
-  },
-
-  starButton: {
-    flex: 1,
-    padding: "10px",
-    borderRadius: "15px",
-    border: "2px solid #c6c6fc",
-    cursor: "pointer",
-    fontWeight: "bold",
-    backgroundColor: "#a4a4fe",
-  },
-
-  starIcon: {
-    opacity: 0.75,
-  },
-
-  result: {
-    marginTop: "20px",
-    padding: "10px",
-    borderRadius: "15px",
-    backgroundColor: "#efeffd",
-    border: "2px solid #c6c6fc",
-    color: "#444",
-  },
-
-  score: {
-    marginTop: "20px",
-    fontSize: "18px",
-    fontWeight: "bold",
-    color: "#908eff",
-  },
-};
