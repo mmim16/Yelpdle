@@ -10,16 +10,34 @@ export default function Game() {
   const [showResult, setShowResult] = useState(false); //controls result display
   const [showReview, setShowReview] = useState(false); //controls review display
   const [message, setMessage] = useState(""); //holds feedback message
-  
+  const [hints, setHints] = useState([]);     //reviews array
+  const [visibleCount, setVisibleCount] = useState(1);    //how many hints shown
+  const [business, setBusiness] = useState("");
+  const [imgHint, setImg] = useState("");     //review photo
+
+
   //Functions
   async function getReview() {  //gets the review from yelp api
-  //  const output = await axios.get("http://localhost:5000/review");
   //  setReview(output.data.text);       //saves the review
   //  setRating(output.data.rating);       //saves the rating
+
+  
+    const response = await fetch("http://localhost:5000/api/game");
+    const data = await response.json();
+
+    setHints(data.reviews);
+    setRating(data.rating);
+    setBusiness(data.name);
+    
+    const imageReview = data.reviews.find(r => r.photos && r.photos.length > 0);
+    setImg(imageReview ? imageReview.photos[0].link : null);
+
     setGuess(null);
     setMessage("");
     setShowResult(false);
     setShowReview(true);
+    setVisibleCount(1);
+    
   }
 
   function getGuess(num) {  //gets the guess from the user
@@ -54,7 +72,27 @@ export default function Game() {
           <button style={styles.button} onClick={getReview}>Get Yelp Review</button>
         )}
         {showReview && ( 
-          <div style={styles.reviewBox}>{review}</div>
+          <div>
+            <h3>Hints for: {business}</h3>
+
+            {hints.slice(0, visibleCount).map((h, i) => (
+              <div key={i} style={styles.reviewBox}>
+                <p>"{h.comment?.text}"</p>     //hint review
+              </div>
+            ))}
+
+            {/* image hint on third try */}
+            {visibleCount >=3 && imgHint && (
+              <img src={imgHint} alt="An image hint" style={{width: '200px', borderRadius: '8px' }} />
+           )}
+
+           {visibleCount <hints.length && !showResult && (
+              <button onClick={() =>setVisibleCount(visibleCount +1)}>
+                Next hint
+              </button>
+
+           )}
+          </div>
         )}
 
         {/* Star buttons */}
