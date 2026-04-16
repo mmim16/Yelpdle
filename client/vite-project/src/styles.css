@@ -10,8 +10,8 @@
 .page::before {
   content: "";
   position: absolute;
-  bottom: 10px;
   top: 10px;
+  bottom: 10px;
   left: 10px;
   right: 10px;
   background-image: url("/pattern.jpg");
