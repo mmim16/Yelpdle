@@ -1,3 +1,3 @@
-# BPFrontend2026
+# Yelpdle
 
-This is a game where players have to guess a restaurant's star rating when given a random yelp review. The website tracks players guesses and scores. This was built using React and JavaScript and uses the Yelp API to fetch real restaurant reviews.
+Yelpdle is a Yelp star-guessing game where players have to guess a restaurant's star rating from a random Yelp review. The website tracks players' guesses and scores. This was built with React, JavaScript, and CSS, using the Yelp API to fetch real restaurant reviews.
