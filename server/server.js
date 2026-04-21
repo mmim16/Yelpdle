@@ -11,8 +11,6 @@ require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const MAX_REVIEW_LENGTH = 300;
 const API_KEY = process.env.YELP_KEY;
 
-console.log("My API Key is:", API_KEY);
-
 const SEARCH_TERMS = [
   "restaurants", "food", "breakfast", "lunch", "dinner",
   "pizza", "sushi", "tacos", "burgers", "coffee",
