@@ -121,9 +121,6 @@ function fetchValidGame(res, attempts = 0, maxAttempts = 5) {
   });
 }
 
-app.get("/api/game", (req, res) => {
-  fetchValidGame(res);
-});
 
 const port = process.env.PORT || 10000;
 
@@ -132,8 +129,14 @@ const port = process.env.PORT || 10000;
 const distPath = path.resolve(__dirname, '../client/vite-project/dist');
 app.use(express.static(distPath));
 
+
+app.get("/api/game", (req, res) => {
+  fetchValidGame(res);
+});
+
+
 // For any route that isn't an API route, send the index.html
-app.get('(.*)', (req, res) => {
+app.get('/:path*', (req, res) => {
   res.sendFile(path.join(distPath, 'index.html'));
 });
 
