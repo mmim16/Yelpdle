@@ -132,8 +132,6 @@ app.listen(port, '0.0.0.0', () => {
   console.log(`Server is running on port ${port}`);
 });
 
-const path = require('path');
-
 // Point to the 'dist' folder Vite created
 const distPath = path.resolve(__dirname, '../client/vite-project/dist');
 app.use(express.static(distPath));
