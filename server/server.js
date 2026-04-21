@@ -127,7 +127,18 @@ app.get("/api/game", (req, res) => {
   fetchValidGame(res);
 });
 
-// const PORT = 5000;
-// app.listen(PORT, () => {
-//   console.log(`Live server listening on http://localhost:${PORT}`);
-// });
+const PORT = process.env.PORT || 10000;
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server is running on port ${port}`);
+});
+
+const path = require('path');
+
+// Point to the 'dist' folder Vite created
+const distPath = path.resolve(__dirname, '../client/vite-project/dist');
+app.use(express.static(distPath));
+
+// For any route that isn't an API route, send the index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
+});
