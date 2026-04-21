@@ -127,7 +127,7 @@ app.get("/api/game", (req, res) => {
   fetchValidGame(res);
 });
 
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log(`Live server listening on http://localhost:${PORT}`);
+// const PORT = 5000;
+// app.listen(PORT, () => {
+//   console.log(`Live server listening on http://localhost:${PORT}`);
 });

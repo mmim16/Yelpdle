@@ -1,6 +1,12 @@
 {
+  "name": "blueprint-fullstack",
+  "version": "1.0.0",
+  "scripts": {
+    "install-all": "npm install && cd server && npm install && cd ../client/vite-project && npm install",
+    "build": "cd client/vite-project && npm run build",
+    "start": "node server/server.js"
+  },
   "dependencies": {
-    "dotenv": "^17.4.2",
-    "env": "^0.0.2"
+    "dotenv": "^17.4.2"
   }
 }

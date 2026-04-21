@@ -26,7 +26,7 @@ export default function Game({ mode, onHome }) {
   const isDaily = mode === "daily";
 
   async function fetchFromServer() {
-    const response = await fetch("http://localhost:5000/api/game");
+    const response = await fetch("/api/game");
     return await response.json();
   }
 
