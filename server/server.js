@@ -134,9 +134,7 @@ app.get("/api/game", (req, res) => {
   fetchValidGame(res);
 });
 
-
-// For any route that isn't an API route, send the index.html
-app.get('/:path*', (req, res) => {
+app.use((req, res) => {
   res.sendFile(path.join(distPath, 'index.html'));
 });
 
