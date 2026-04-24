@@ -26,7 +26,7 @@ export default function Game({ mode, onHome }) {
   const isDaily = mode === "daily";
 
   async function fetchFromServer() {
-    const response = await fetch("/api/game");
+    const response = await fetch('${import.meta.env.VITE_API_URL}/api/game');
     return await response.json();
   }
 
