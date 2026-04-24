@@ -26,7 +26,7 @@ export default function Game({ mode, onHome }) {
   const isDaily = mode === "daily";
 
   async function fetchFromServer() {
-    const response = await fetch('${import.meta.env.VITE_API_URL}/api/game');
+    const response = await fetch("https://yelpdle-h362.onrender.com/api/game");
     return await response.json();
   }
 
