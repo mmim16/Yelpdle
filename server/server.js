@@ -129,18 +129,8 @@ function fetchValidGame(res, attempts = 0, maxAttempts = 5) {
 
 const port = process.env.PORT || 10000;
 
-
-// Point to the 'dist' folder Vite created
-const distPath = path.resolve(__dirname, '../client/vite-project/dist');
-app.use(express.static(distPath));
-
-
 app.get("/api/game", (req, res) => {
   fetchValidGame(res);
-});
-
-app.use((req, res) => {
-  res.sendFile(path.join(distPath, 'index.html'));
 });
 
 app.listen(port, '0.0.0.0', () => {
