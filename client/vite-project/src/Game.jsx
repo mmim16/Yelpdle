@@ -4,22 +4,6 @@ import "./styles.css";
 const MAX_HINTS = 3;
 const DAILY_ROUNDS = 5;
 
-function parseRating(value) {
-  if (typeof value === "number" && Number.isFinite(value)) {
-    return value >= 1 && value <= 5 ? value : null;
-  }
-
-  if (typeof value === "string") {
-    const match = value.match(/\d+(?:\.\d+)?/);
-    if (!match) return null;
-
-    const rating = Number(match[0]);
-    return Number.isFinite(rating) && rating >= 1 && rating <= 5 ? rating : null;
-  }
-
-  return null;
-}
-
 export default function Game({ mode, onHome }) {
   const [rating, setRating] = useState(null);
   const [guess, setGuess] = useState(null);
@@ -27,7 +11,6 @@ export default function Game({ mode, onHome }) {
   const [showResult, setShowResult] = useState(false);
   const [showReview, setShowReview] = useState(false);
   const [message, setMessage] = useState("");
-  const [loadError, setLoadError] = useState("");
   const [hints, setHints] = useState([]);
   const [visibleCount, setVisibleCount] = useState(1);
   const [business, setBusiness] = useState("");
@@ -60,47 +43,33 @@ export default function Game({ mode, onHome }) {
   }, []);
 
   function applyData(data) {
-    const nextRating = parseRating(data.rating);
-    if (nextRating === null) {
-      console.warn("Server returned a game without a valid rating.");
-      return false;
-    }
-
     setRoundKey(k => k + 1); // key change forces React to remount content fresh
     setHints(data.reviews || []);
-    setRating(nextRating);
+    setRating(data.rating);
     setBusiness(data.name);
     setGuess(null);
     setMessage("");
-    setLoadError("");
     setShowResult(false);
     setShowReview(true);
     setVisibleCount(1);
-    return true;
   }
 
   async function getReview() {
-    setLoadError("");
-
     if (prefetchedData.current) {
       const data = prefetchedData.current;
       prefetchedData.current = null;
-      if (applyData(data)) {
-        prefetchNext();
-        return;
-      }
+      applyData(data);
+      prefetchNext();
+      return;
     }
 
     setLoading(true);
     try {
       const data = await fetchFromServer();
-      if (!applyData(data)) {
-        setLoadError("Could not load a playable review because the server did not send a rating. Try again after the backend is deployed.");
-      }
+      applyData(data);
       prefetchNext();
     } catch (err) {
       console.error("Failed to fetch review:", err);
-      setLoadError("Could not load a review right now. Try again in a moment.");
     } finally {
       setLoading(false);
     }
@@ -253,12 +222,9 @@ export default function Game({ mode, onHome }) {
         {/* roundKey forces this entire block to remount fresh each round */}
         <div key={roundKey}>
           {!showReview && (
-            <>
-              <button className="button" onClick={getReview} disabled={loading}>
-                {loading ? "Loading…" : isDaily ? `Start Round ${round}` : "Get Review"}
-              </button>
-              {loadError && <p className="errorText">{loadError}</p>}
-            </>
+            <button className="button" onClick={getReview} disabled={loading}>
+              {loading ? "Loading…" : isDaily ? `Start Round ${round}` : "Get Review"}
+            </button>
           )}
 
           {showReview && (

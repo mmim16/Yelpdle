@@ -258,15 +258,6 @@ html, body {
   cursor: not-allowed;
 }
 
-.errorText {
-  max-width: 440px;
-  margin: 14px auto 0;
-  color: #b24141;
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.45;
-}
-
 .button.secondary {
   background-color: transparent;
   color: #908eff;
