@@ -76,16 +76,26 @@ export default function Game({ mode, onHome }) {
   }
 
   function submitAnswer() {
-    const actual = Math.round(rating);
-    const correct = guess === actual;
-    if (correct) setScore(prev => prev + 1);
-    setMessage(correct ? "Correct!" : `Not quite — it was ${actual} stars`);
-    setShowResult(true);
-    if (isDaily) {
-      setResults(prev => [...prev, { business, guess, actual, correct }]);
-    }
-    prefetchNext();
+  const parsedRating = parseRating(rating);
+
+  if (parsedRating === null) {
+    setLoadError("Could not submit because this restaurant has an invalid rating.");
+    return;
   }
+
+  const actual = Math.round(parsedRating);
+  const correct = guess === actual;
+
+  if (correct) setScore(prev => prev + 1);
+  setMessage(correct ? "Correct!" : `Not quite — it was ${actual} stars`);
+  setShowResult(true);
+
+  if (isDaily) {
+    setResults(prev => [...prev, { business, guess, actual, correct }]);
+  }
+
+  prefetchNext();
+}
 
   function nextRound() {
     if (isDaily && round >= DAILY_ROUNDS) {
