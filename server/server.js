@@ -24,6 +24,41 @@ function getPhotoUrl(rev) {
   return null;
 }
 
+function parseRating(value) {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value >= 1 && value <= 5 ? value : null;
+  }
+
+  if (typeof value === "string") {
+    const match = value.match(/\d+(?:\.\d+)?/);
+    if (!match) return null;
+
+    const rating = Number(match[0]);
+    return Number.isFinite(rating) && rating >= 1 && rating <= 5 ? rating : null;
+  }
+
+  return null;
+}
+
+function getBusinessRating(business) {
+  const candidates = [
+    business.rating,
+    business.rating_text,
+    business.stars,
+    business.review_rating,
+    business.reviews_rating,
+    business.extensions?.rating,
+    ...(Array.isArray(business.extensions) ? business.extensions : [])
+  ];
+
+  for (const candidate of candidates) {
+    const rating = parseRating(candidate);
+    if (rating !== null) return rating;
+  }
+
+  return null;
+}
+
 function buildHints(reviewJson) {
   const allReviews = reviewJson["reviews"] || [];
 
@@ -89,10 +124,21 @@ function fetchValidGame(res, attempts = 0, maxAttempts = 5) {
       return fetchValidGame(res, attempts + 1, maxAttempts);
     }
 
-    const pickRand  = Math.floor(Math.random() * results.length);
-    const business  = results[pickRand];
-    const businessID = business.place_ids[0];
-    const trueRating = business.rating;
+    const playableResults = results
+      .map(business => ({
+        business,
+        rating: getBusinessRating(business),
+        placeID: business.place_ids?.[0]
+      }))
+      .filter(result => result.rating !== null && result.placeID);
+
+    if (playableResults.length === 0) {
+      console.log(`Attempt ${attempts + 1}: No businesses with valid ratings found, retrying...`);
+      return fetchValidGame(res, attempts + 1, maxAttempts);
+    }
+
+    const pickRand = Math.floor(Math.random() * playableResults.length);
+    const { business, rating: trueRating, placeID: businessID } = playableResults[pickRand];
 
     const reviewStart = Math.floor(Math.random() * 3) * 10;
 
