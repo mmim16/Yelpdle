@@ -35,7 +35,7 @@ export default function Game({ mode, onHome }) {
     isPrefetching.current = true;
     try {
       prefetchedData.current = await fetchFromServer();
-    } catch {
+    } catch (err) {
       prefetchedData.current = null;
     } finally {
       isPrefetching.current = false;
